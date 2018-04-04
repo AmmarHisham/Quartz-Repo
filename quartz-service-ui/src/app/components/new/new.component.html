@@ -1,127 +1,116 @@
 <br>
 <div id="newShedule">
-<h4 id="newJob">Shedule a new Job</h4>
-<div class="container">
-   <form [formGroup]="schedulerForm" novalidate autocomplete="off">
-      <div class="row">
-         <div class="col-25">
-            <h4>Enter Job Name:</h4>
-         </div>
-         <div class="col-75">
-            <input type="text" name="jobName"  formControlName="jobName"/>      
-         </div>
-      </div>
-      <br>
-      <div class="row">
-         <div class="col-25">
-            <h4>Select a task:</h4>
-         </div>
-         <div class="col-75">
+    <h4 id="newJob">Shedule a new Job</h4>
+    <div class="container">
+        <form [formGroup]="schedulerForm" novalidate autocomplete="off">
+            <div class="row">
+                <div class="col-25">
+                    <h4>Enter Job Name:</h4>
+                </div>
+                <div class="col-75">
+                    <input type="text" name="jobName" formControlName="jobName" required pattern="[a-zA-Z]+" />
+                    <small *ngIf="!jobName.pristine && jobName.hasError('required')" class="text-danger">Name is required</small>
+                    <small *ngIf="!jobName.pristine && jobName.hasError('pattern')" class="text-danger">Only alphabets allowed</small>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-25">
+                    <h4>Select a task:</h4>
+                </div>
+                <div class="col-75">
 
-          <select (change)="startTaskChange($event.target.value)" 
-                    class="form-control" style="width:175px;">
-          <option value= ""></option>          
-          <option *ngFor="let task of tasks" value= {{task.launch_url}}>{{task.taskKey}}</option>
-            </select> 
-      </div>
-      </div>
+                    <select required (change)="startTaskChange($event.target.value)" class="form-control" style="width:175px;">
+                        <option value=""></option>
+                        <option *ngFor="let task of tasks" value= {task.launch_url}},{{task.taskKey}}>{{task.taskKey}}</option>
+                    </select>
+               </div>
+            </div>
 
-      <div>
-        <h4 style="padding-left:0px;">Enter Date and Time:</h4>
-      </div>  
-         <table>
-            <tr>
-               <td>
-                  Year:
-                  <input type="text" name="year" 
-                     id="year"  placeholder="yyyy" class="form-control"
-                     formControlName="year"
-                     style="width:100px"/>
-               </td>
-               <td>
-                  Month:
-                  <input type="text" name="month" 
-                     id="month" placeholder="MM" class="form-control"
-                     formControlName="month"
-                     style="width:100px"/>
-               </td>
-               <td>
-                  Day:
-                  <input type="text" name="day" 
-                     id="day" placeholder="dd" class="form-control"
-                     formControlName="day"
-                     style="width:100px"/>
-               </td>
-               <td>
-                  Hour(24-hour):
-                  <input type="text"  name="hour" 
-                     id="hour" placeholder="HH" class="form-control"
-                     formControlName="hour"
-                     style="width:100px"/>
-               </td>
-               <td>
-                  Minute:
-                  <input type="text" 
-                     name="minute" 
-                     id="minute" placeholder="mm"  class="form-control"
-                     formControlName="minute"
-                     style="width:100px"/>
-               </td>
-            </tr>
-         </table>
-        <br> 
-        <div>
-        <h4 style="padding-left:0px;">Select A Scheduler Type:</h4>
-      </div>
-      
-      <div class="radio">
-        <label><input type="radio" (change)="cronFlag=false" value="oneTimeSchedule" checked  name="scheduleType" formControlName="scheduleType">One Time Schedule</label>
-        <label><input type="radio" (change)="cronFlag=true" value="cronSchedule"  name="scheduleType"  formControlName="scheduleType">Cron Schedule</label>
-      </div>
+            <div>
+                <h4 style="padding-left:0px;">Enter Date and Time:</h4>
+            </div>
+            <table>
+                <tr>
+                    <td>
+                        Year:
+                        <input type="text" name="year" id="year" placeholder="yyyy" class="form-control" formControlName="year" style="width:100px"
+                        required pattern="^(20[0-9][0-9]|20[012][0-9])$" maxlength="4"/>
+                        <small *ngIf="year.hasError('required')" class="text-danger">Year is required</small>
+                        <small *ngIf="year.hasError('pattern')" class="text-danger">Range 200*-202*</small>
+                    </td>
+                    <td>
+                        Month:
+                        <input type="text" name="month" id="month" maxlength="2" placeholder="MM" class="form-control" formControlName="month" style="width:100px"
+                        />
+                      
+                    </td>
+                    <td>
+                        Day:
+                        <input type="text" name="day" id="day" placeholder="dd" maxlength="2" class="form-control" formControlName="day" style="width:100px" 
+                       />
+                      
+                    </td>
+                    <td>
+                        Hour(24-hour):
+                        <input type="text" name="hour" id="hour" placeholder="HH" maxlength="2" class="form-control" formControlName="hour" style="width:100px"
+                        />
+                        
+                    </td>
+                    <td>
+                        Minute:
+                        <input type="text" name="minute" id="minute" placeholder="mm" maxlength="2" class="form-control" formControlName="minute" style="width:100px"
+                        />
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <div>
+                <h4 style="padding-left:0px;">Select A Scheduler Type:</h4>
+            </div>
 
-      <div *ngIf="cronFlag">
-        <table >
-        <tr>
-            <td>
-                Select a cron schedule : &nbsp;
-            </td>
-            <td> 
-                <select (change)="cronChange($event.target.value)" 
-                    class="form-control">
-                    <option value="* 0/5 * ? * * *">Every 5 minutes</option>
-                    <option value="* 0/30 * ? * * *">Every 30 minutes</option>
-                </select>
-            </td>
-        </tr>
-    </table>
-</div>
-    <div id="buttonAction">
-     <table  id="butonTab">
-        <tr>
-            <td colspan="2" style="margin-bottom:40px;"> 
-                <!-- Used only in case of Adding New Job -->
-                <input type="button" class="btn btn-primary"
-                    name="submit" 
-                    id="submit" 
-                    (click)="scheduleJob()"
-                    *ngIf="!isEditMode" 
-                    value="Submit"/>
+            <div class="radio">
+                <label>
+                    <input type="radio" (change)="cronFlag=false" value="oneTimeSchedule" checked name="scheduleType" formControlName="scheduleType">One Time Schedule</label>
+                <label>
+                    <input type="radio" (change)="cronFlag=true" value="cronSchedule" name="scheduleType" formControlName="scheduleType">Cron Schedule</label>
+            </div>
 
-                <input type="button" class="btn"
-                    name="submit" 
-                    id="submit" 
-                    (click)="cancelEdit()"
-                    value="Clear"/>
-            </td>
-        </tr>
-    </table>
+            <div *ngIf="cronFlag">
+                <table>
+                    <tr>
+                        <td>
+                            Select a cron schedule : &nbsp;
+                        </td>
+                        <td>
+                            <select (change)="cronChange($event.target.value)" class="form-control">
+                                <option value="* 0/5 * ? * * *">Every 5 minutes</option>
+                                <option value="* 0/30 * ? * * *">Every 30 minutes</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="buttonAction">
+                <table id="butonTab">
+                    <tr>
+                        <td colspan="2">
+                            <!-- Used only in case of Adding New Job -->
+                            <input type="button" class="btn" style="margin-bottom:45px;" name="submit" id="submit" [disabled]="!schedulerForm.valid" (click)="scheduleJob()" *ngIf="!isEditMode"
+                                value="Submit" />
+
+                            <input type="button" class="btn" style="margin-bottom:45px;" name="submit" id="submit" (click)="cancelEdit()" value="Clear"
+                            />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
     </div>
-   </form>
-</div>
 </div>
 
 <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
 
-  <div class="my-alert-center-style center_div">
-    <nac-alert-center [animation]="'fancy'" [htmlTextEnabled]="true" ></nac-alert-center>
-  </div>
+<div class="my-alert-center-style center_div">
+    <nac-alert-center [animation]="'fancy'" [htmlTextEnabled]="true"></nac-alert-center>
+</div>

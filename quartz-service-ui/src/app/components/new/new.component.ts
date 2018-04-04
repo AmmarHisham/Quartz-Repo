@@ -25,7 +25,7 @@ export class NewComponent implements OnInit, OnDestroy {
   public loading = false;
   startTask: String = '';
   tasks = [Task];
-  taskKey: String = 'Development';
+  taskKey: String = '';
   envStatus: boolean = false;
 
   cronFlag: boolean = false;
@@ -35,6 +35,14 @@ export class NewComponent implements OnInit, OnDestroy {
     public _schedulerService: SchedulerService,
     public _responseCode: ServerResponseCode,
     public _alertService: AlertCenterService) { }
+
+    get jobName():FormControl{
+      return this.schedulerForm.get('jobName') as FormControl;
+    }
+
+    get year():FormControl{
+      return this.schedulerForm.get('year') as FormControl;
+    }
 
   ngOnInit() {
     this.loading = true;
@@ -216,8 +224,11 @@ export class NewComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
-  startTaskChange(taskUrl) {
-    this.startTask = taskUrl;
+  startTaskChange(taskValue) {
+    var temp = new Array();
+    temp = taskValue.split(",");
+    this.startTask = temp[0];
+    this.taskKey = temp[1];
   }
 
 

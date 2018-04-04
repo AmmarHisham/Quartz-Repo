@@ -80,7 +80,7 @@ h4{
 
 
 .center_div{
-    margin: 0 auto;
-    padding-top: 50%;
-    width:80% ;/* value of your choice which suits your alignment */
+    width:1100px ;
+    padding-top: 5%;
+    padding-left: 700px;
 }

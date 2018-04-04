@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobKey;
@@ -29,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.cg.dao.TaskDao;
 import com.cg.job.CronJob;
+import com.cg.util.ResponseObject;
 import com.cg.util.Task;
 
 
@@ -235,6 +237,18 @@ public class JobServiceImpl implements JobService{
 		try {
 			schedulerFactoryBean.getScheduler().resumeJob(jKey);
 			logger.info("Job with jobKey :"+jobKey+ " resumed succesfully.");
+			
+			Task task = taskDao.getOne(groupName);
+			String start_url = task.getLaunch_url();
+			
+			logger.info("URl "+start_url);
+			logger.info("Service Call Started");
+			ResponseEntity<ResponseObject> responseEntity = restTemplate.getForEntity(start_url, ResponseObject.class);
+			HttpStatus statusCode = responseEntity.getStatusCode();
+			logger.info("Service Call Status : "+statusCode);	
+			logger.info("Service Call Ended");
+			
+			
 			return true;
 		} catch (SchedulerException e) {
 			logger.info("SchedulerException while resuming job with key :"+jobKey+ " message :"+e.getMessage());
@@ -255,6 +269,18 @@ public class JobServiceImpl implements JobService{
 		try {
 			schedulerFactoryBean.getScheduler().triggerJob(jKey);
 			logger.info("Job with jobKey :"+jobKey+ " started now succesfully.");
+			
+			Task task = taskDao.getOne(groupName);
+			String start_url = task.getLaunch_url();
+			
+			logger.info("URl "+start_url);
+			logger.info("Service Call Started");
+			ResponseEntity<ResponseObject> responseEntity = restTemplate.getForEntity(start_url, ResponseObject.class);
+			HttpStatus statusCode = responseEntity.getStatusCode();
+			logger.info("Service Call Status : "+statusCode);	
+			logger.info("Service Call Ended");
+			
+			
 			return true;
 		} catch (SchedulerException e) {
 			logger.info("SchedulerException while starting job now with key :"+jobKey+ " message :"+e.getMessage());
@@ -302,6 +328,8 @@ public class JobServiceImpl implements JobService{
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		try {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			 String cronExpr = "";
+			
 
 			for (String groupName : scheduler.getJobGroupNames()) {
 				for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
@@ -315,12 +343,20 @@ public class JobServiceImpl implements JobService{
 					Date nextFireTime = triggers.get(0).getNextFireTime();
 					Date lastFiredTime = triggers.get(0).getPreviousFireTime();
 					
+					for (Trigger trigger : triggers) {
+					    if (trigger instanceof CronTrigger) {
+					        CronTrigger cronTrigger = (CronTrigger) trigger;
+					        cronExpr  = cronTrigger.getCronExpression();
+					    }
+					}
+					
 					Map<String, Object> map = new HashMap<String, Object>();
 					map.put("jobName", jobName);
 					map.put("groupName", jobGroup);
 					map.put("scheduleTime", scheduleTime);
 					map.put("lastFiredTime", lastFiredTime);
 					map.put("nextFireTime", nextFireTime);
+					map.put("cronExpr", cronExpr);
 					
 					if(isJobRunning(jobName,jobGroup)){
 						map.put("jobStatus", "RUNNING");

@@ -25,12 +25,13 @@
 }
 
 .newJob{
-   border-radius: 5px;
-   background-color: #101010;
-    padding: 10px;
-    width: 630px;
+    background-color: #101010;
+    padding: 15px;
+    width: 648PX;
     color: #fff;
     border-bottom: 25px;
+    font-size: 15px;
+    font-weight: normal;
 }
 
 .buttonAction{
@@ -69,4 +70,9 @@ h4{
     text-decoration: none;
     font-size: 15px;
     font-weight: bold;
+}
+
+input[readonly]
+{
+    background-color: #ccc;
 }

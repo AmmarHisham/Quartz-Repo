@@ -14,6 +14,7 @@ jobNameStatus : String;
 jobRecords = [];
 isEditMode: boolean = false;
 public loading = false;
+cronExpression;
 
   public constructor(private route : ActivatedRoute,private _fb: FormBuilder
     ,private _schedulerService : SchedulerService,)
@@ -31,7 +32,8 @@ public loading = false;
       day: [''],
       hour: [''],
       minute: [''],
-      cronExpression: ['0 0/1 * 1/1 * ? *']
+      cronExpression: [''],
+      cronExpr:['']
     });
  	  this.route.queryParams.subscribe(params => {
     
@@ -39,9 +41,14 @@ public loading = false;
     var d = Date.parse(time.toString());
     let date = new Date(time);
 
+    this.cronExpression =  params['cronExpr'];
+    var cronText = `Every ${this.cronExpression.substring(4,6).trim()} minutes`;
+
+
     	this.editForm.patchValue({
         jobName: params['jobName'],
         groupName: params['groupName'],
+        cronExpr: cronText,
         year: date.getFullYear(),
         month: date.getMonth() + 1,
         day: date.getDate(),
@@ -62,12 +69,12 @@ public loading = false;
     var day = this.editForm.value.day;
     var hour = this.editForm.value.hour;
     var minute = this.editForm.value.minute;
-    var groupName ='';
+    var groupName =this.editForm.value.groupName;
     
     var data = {
       "jobName": this.editForm.value.jobName,
       "jobScheduleTime": this.getFormattedDate(year, month, day, hour, minute),
-      "cronExpression": this.editForm.value.cronExpression,
+      "cronExpression": this.cronExpression,
       "groupName":groupName
     }
     this.loading = true;
@@ -99,6 +106,9 @@ public loading = false;
 
     var d = Date.parse(selectedJobRow.scheduleTime);
     let date = new Date(selectedJobRow.scheduleTime); 
+    var cronExpression = selectedJobRow.cronExpr;
+    var cronText = `Every ${cronExpression.substring(4,6).trim()} Minute`;
+
 
     this.loading = true;
     this.editForm.patchValue({
@@ -108,7 +118,8 @@ public loading = false;
         day: date.getDate(),
         hour: date.getHours(),
         minute: date.getMinutes(),
-        groupName: selectedJobRow.groupName
+        groupName: selectedJobRow.groupName,
+        cronExpr: cronText
       });
 
     this.loading = false;
@@ -173,5 +184,8 @@ public loading = false;
         cronExpression: cronExp
       });
   }
+
+
+  
 
 }
