@@ -44,6 +44,20 @@ export class NewComponent implements OnInit, OnDestroy {
       return this.schedulerForm.get('year') as FormControl;
     }
 
+    get month():FormControl{
+      return this.schedulerForm.get('month') as FormControl;
+    }
+
+    get day():FormControl{
+      return this.schedulerForm.get('day') as FormControl;
+    }
+    get minute():FormControl{
+      return this.schedulerForm.get('minute') as FormControl;
+    }
+    get hour():FormControl{
+      return this.schedulerForm.get('hour') as FormControl;
+    }
+
   ngOnInit() {
     this.loading = true;
     this.jobNameStatus = "";
@@ -68,13 +82,22 @@ export class NewComponent implements OnInit, OnDestroy {
   }
 
   setDate(): void {
-    let date = new Date();
+     
+    //EST offset
+     var  offset = -4.0;
+     
+     var clientDate = new Date();
+     var utc = clientDate.getTime() + (clientDate.getTimezoneOffset() * 60000);
+   
+    var serverDate = new Date(utc + (3600000*offset));
+   
+
     this.schedulerForm.patchValue({
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
-      day: date.getDate(),
-      hour: date.getHours(),
-      minute: date.getMinutes()
+      year: serverDate.getFullYear(),
+      month: serverDate.getMonth() + 1,
+      day: serverDate.getDate(),
+      hour: serverDate.getHours(),
+      minute: serverDate.getMinutes()
     });
   }
 
@@ -167,9 +190,6 @@ export class NewComponent implements OnInit, OnDestroy {
       }
     }
 
-    var result =this.checkEnvStatus(this.taskKey);
-
-    if(result===false){
       this.loading = true;
       this._schedulerService.scheduleJob(data).subscribe(
         success => {
@@ -177,9 +197,12 @@ export class NewComponent implements OnInit, OnDestroy {
             this.loading = false;
             const alert = new Alert(AlertType.SUCCESS, '', 'Job scheduled successfully.', 5000, true);
             this._alertService.alert(alert);
-
             this.resetForm();
   
+          } else if (success.statusCode == ServerResponseCode.TASK_IS_ALREADY_SHEDULE) {
+            this.loading = false;
+            const alert = new Alert(AlertType.DANGER, '', 'Task is already schedule.', 5000, true);
+            this._alertService.alert(alert);
           } else if (success.statusCode == ServerResponseCode.JOB_WITH_SAME_NAME_EXIST) {
             this.loading = false;
             const alert = new Alert(AlertType.DANGER, '', 'Job with same name exists, Please choose different name.', 5000, true);
@@ -202,8 +225,6 @@ export class NewComponent implements OnInit, OnDestroy {
         });
   
     }
-
-  }
 
   refreshJob() {
     this.getJobs();
@@ -229,34 +250,6 @@ export class NewComponent implements OnInit, OnDestroy {
     temp = taskValue.split(",");
     this.startTask = temp[0];
     this.taskKey = temp[1];
-  }
-
-
-  checkEnvStatus(taskKey):boolean {
-    var data = {
-      "taskKey": taskKey,
-    }
-
-    this.loading = true;
-
-    this._schedulerService.checkEnvStatus(data).subscribe(
-      success => {
-        if (success.statusCode == ServerResponseCode.SUCCESS) {
-          this.envStatus = false;
-        } else if (success.statusCode == ServerResponseCode.TASK_IS_ALREADY_SHEDULE) {
-          this.loading = false;
-          const alert = new Alert(AlertType.DANGER, '', 'Task is already sheduled.', 5000, true);
-          this._alertService.alert(alert);
-          this.envStatus = true;
-        }
-      },
-      err => {
-        this.loading = false;
-        const alert = new Alert(AlertType.DANGER, '', 'Error while checking the task status.', 5000, true);
-        this._alertService.alert(alert);
-        this.envStatus = true;
-      });
-      return this.envStatus;
   }
 
 }

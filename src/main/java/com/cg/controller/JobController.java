@@ -58,6 +58,15 @@ public class JobController {
 			return getServerResponse(ServerResponseCode.JOB_TASK_NOT_PRESENT, false);
 		}
 		
+		
+		boolean checkTaskflag = false;
+		checkTaskflag = jobService.checkEnvStatus(taskName);
+		 
+		 if(checkTaskflag==true) {
+			 return getServerResponse(ServerResponseCode.TASK_IS_ALREADY_SHEDULE, checkTaskflag);
+		 }
+		
+		
 		logger.info("Scheduling Job with name : "+jobName);
 
 		//Check if job Name is unique;
@@ -428,22 +437,6 @@ public class JobController {
 		logger.info("Tasks List "+taskList.toString());
 		
 		return getServerResponse(ServerResponseCode.SUCCESS, taskList);
-		
-	}
-	
-	
-	
-	@RequestMapping("envstatus")
-	public ServerResponse checkEnvStatus(@RequestParam("taskKey") String taskKey) {
-		boolean flag = false;
-		 flag = jobService.checkEnvStatus(taskKey);
-		 
-		 if(flag==false) {
-			 return getServerResponse(ServerResponseCode.SUCCESS, flag);
-		 }else {
-			 return getServerResponse(ServerResponseCode.TASK_IS_ALREADY_SHEDULE, flag);
-		 }
-		
 		
 	}
 	

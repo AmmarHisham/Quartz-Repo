@@ -20,7 +20,7 @@
                 </div>
                 <div class="col-75">
 
-                    <select required (change)="startTaskChange($event.target.value)" class="form-control" style="width:175px;">
+                    <select id="task" required (change)="startTaskChange($event.target.value)" class="form-control" style="width:175px;">
                         <option value=""></option>
                         <option *ngFor="let task of tasks" value= {task.launch_url}},{{task.taskKey}}>{{task.taskKey}}</option>
                     </select>
@@ -35,32 +35,38 @@
                     <td>
                         Year:
                         <input type="text" name="year" id="year" placeholder="yyyy" class="form-control" formControlName="year" style="width:100px"
-                        required pattern="^(20[0-9][0-9]|20[012][0-9])$" maxlength="4"/>
+                        required pattern="(?:20\d{2})" maxlength="4"/>
                         <small *ngIf="year.hasError('required')" class="text-danger">Year is required</small>
                         <small *ngIf="year.hasError('pattern')" class="text-danger">Range 200*-202*</small>
                     </td>
                     <td>
                         Month:
-                        <input type="text" name="month" id="month" maxlength="2" placeholder="MM" class="form-control" formControlName="month" style="width:100px"
+                        <input type="text" name="month" id="month" required pattern="(?:[1-9]|1[0-2])"  maxlength="2" placeholder="MM" class="form-control" formControlName="month" style="width:100px"
                         />
-                      
+                        <small *ngIf="month.hasError('required')" class="text-danger">Month is required</small>
+                        <small *ngIf="month.hasError('pattern')" class="text-danger">Range 01 to 12</small>
                     </td>
                     <td>
                         Day:
-                        <input type="text" name="day" id="day" placeholder="dd" maxlength="2" class="form-control" formControlName="day" style="width:100px" 
+                        <input type="text" name="day" id="day" required pattern="(?:[1-9]|[12][0-9]|3[01])" placeholder="dd" maxlength="2" class="form-control" formControlName="day" style="width:100px" 
                        />
+                       <small *ngIf="day.hasError('required')" class="text-danger">Day is required</small>
+                       <small *ngIf="day.hasError('pattern')" class="text-danger">Range 01-31</small>
                       
                     </td>
                     <td>
                         Hour(24-hour):
-                        <input type="text" name="hour" id="hour" placeholder="HH" maxlength="2" class="form-control" formControlName="hour" style="width:100px"
+                        <input type="text" name="hour" id="hour" required pattern="(?:0[1-9]|[12][0-3]|[0-1]?[0-9])" placeholder="HH" maxlength="2" class="form-control" formControlName="hour" style="width:100px"
                         />
-                        
+                        <small *ngIf="hour.hasError('required')" class="text-danger">Hour is required</small>
+                        <small *ngIf="hour.hasError('pattern')" class="text-danger">Range 00 to 23</small>
                     </td>
                     <td>
                         Minute:
-                        <input type="text" name="minute" id="minute" placeholder="mm" maxlength="2" class="form-control" formControlName="minute" style="width:100px"
+                        <input type="text" name="minute" id="minute" required pattern="(?:0[1-9]|[12][0-9]|3[0-9]|4[0-9]|5[0-9]|[0-1]?[0-9])" placeholder="mm" maxlength="2" class="form-control" formControlName="minute" style="width:100px"
                         />
+                        <small *ngIf="minute.hasError('required')" class="text-danger">Minutes is required</small>
+                        <small *ngIf="minute.hasError('pattern')" class="text-danger">Range 00 to 59</small>
                     </td>
                 </tr>
             </table>

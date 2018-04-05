@@ -11,7 +11,7 @@
    <button class="float-right;" (click)='refreshJob()'>Refresh</button>
    <br><br/>
    <div *ngIf="jobFlag">
-    <table id="jobs" border="1" style="width : 115%;">
+    <table id="jobs" border="1" style="width : 100%;">
         <thead>
             <th>Job Name</th>
             <th>Job Schedule Time</th>
@@ -53,11 +53,11 @@
     </table>
 </div>
     <div *ngIf="!jobFlag" > 
-        <b><h3 style="padding-left: 350px;">Currently No Jobs Are Scheduled</h3></b>
+        <b><h3 style="padding-left: 40%;">Currently No Jobs Are Scheduled</h3></b>
     </div>
 </div>
 
-<ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+<ngx-loading [show]="loading" class="width:115%" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
 
 <div class="my-alert-center-style center_div">
     <nac-alert-center [animation]="'fancy'" [htmlTextEnabled]="true" ></nac-alert-center>
