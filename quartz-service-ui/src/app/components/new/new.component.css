@@ -84,3 +84,12 @@ h4{
     padding-top: 5%;
     padding-left: 700px;
 }
+
+intput[type="button"]:disabled{
+    background-color: gray;
+    color: white;
+    padding: 6px 6px;
+    border: none;
+    border-radius: 4px;
+    cursor:not-allowed;
+}
