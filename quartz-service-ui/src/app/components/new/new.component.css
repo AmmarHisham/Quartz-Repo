@@ -47,27 +47,32 @@
   padding-left: 200px;
 }
 
-#submit
-{
+input[type="button"]:disabled{
+    background-color: gray;
+    color: white;
+    padding: 6px 6px;
+    border: none;
+    border-radius: 4px;
+    cursor:not-allowed;
+}
+
+input[type="button"]:enabled{
     background-color: black;
     color: white;
     padding: 6px 6px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-
 }
 
-#submit:hover{
-  background-color: white;
+input[type="button"]:enabled:hover{
+    background-color: white;
     color: black;
     padding: 6px 6px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
-
-
 
 h4{
     color: black;
@@ -85,11 +90,3 @@ h4{
     padding-left: 700px;
 }
 
-intput[type="button"]:disabled{
-    background-color: gray;
-    color: white;
-    padding: 6px 6px;
-    border: none;
-    border-radius: 4px;
-    cursor:not-allowed;
-}

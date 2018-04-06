@@ -5,7 +5,7 @@
         <form [formGroup]="schedulerForm" novalidate autocomplete="off">
             <div class="row">
                 <div class="col-25">
-                    <h4>Enter Job Name:</h4>
+                    <h4>Enter Job Name<span style="color:red;">*</span> : </h4>
                 </div>
                 <div class="col-75">
                     <input type="text" name="jobName" formControlName="jobName" required pattern="[a-zA-Z]+" />
@@ -16,19 +16,20 @@
             <br>
             <div class="row">
                 <div class="col-25">
-                    <h4>Select a task:</h4>
+                    <h4>Select a task<span style="color:red;">*</span> : </h4>
                 </div>
                 <div class="col-75">
 
-                    <select id="task" required (change)="startTaskChange($event.target.value)" class="form-control" style="width:175px;">
+                    <select id="task" required (change)="startTaskChange($event.target.value)" class="form-control" style="width:175px;" formControlName="selectCron">
                         <option value=""></option>
                         <option *ngFor="let task of tasks" value= {task.launch_url}},{{task.taskKey}}>{{task.taskKey}}</option>
                     </select>
+                    <small *ngIf=" !selectCronVal.pristine && selectCronVal.hasError('required')" class="text-danger">Task is required</small>
                </div>
             </div>
 
             <div>
-                <h4 style="padding-left:0px;">Enter Date and Time:</h4>
+                <h4 style="padding-left:0px;">Enter Date and Time<span style="color:red;">*</span> : </h4>
             </div>
             <table>
                 <tr>
@@ -72,7 +73,7 @@
             </table>
             <br>
             <div>
-                <h4 style="padding-left:0px;">Select A Scheduler Type:</h4>
+                <h4 style="padding-left:0px;">Select A Scheduler Type<span style="color:red;">*</span> : </h4>
             </div>
 
             <div class="radio">
@@ -89,7 +90,7 @@
                             Select a cron schedule : &nbsp;
                         </td>
                         <td>
-                            <select (change)="cronChange($event.target.value)" class="form-control">
+                            <select (change)="cronChange($event.target.value)" class="form-control" >
                                 <option value="* 0/5 * ? * * *">Every 5 minutes</option>
                                 <option value="* 0/30 * ? * * *">Every 30 minutes</option>
                             </select>
@@ -102,10 +103,10 @@
                     <tr>
                         <td colspan="2">
                             <!-- Used only in case of Adding New Job -->
-                            <input type="button" class="btn" style="margin-bottom:45px;" name="submit" id="submit" [disabled]="!schedulerForm.valid" (click)="scheduleJob()" *ngIf="!isEditMode"
+                            <input type="button" style="margin-bottom:45px;" name="submit" id="submit" [disabled]="!schedulerForm.valid" (click)="scheduleJob()" *ngIf="!isEditMode"
                                 value="Submit" />
 
-                            <input type="button" class="btn" style="margin-bottom:45px;" name="submit" id="submit" (click)="cancelEdit()" value="Clear"
+                            <input type="button" style="margin-bottom:45px;" name="submit" id="submit" (click)="cancelEdit()" value="Clear"
                             />
                         </td>
                     </tr>

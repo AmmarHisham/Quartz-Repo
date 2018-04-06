@@ -22,7 +22,7 @@
             </div>
 
             <div>
-                <h4 style="padding-left:0px;">Enter Date and Time:</h4>
+                <h4 style="padding-left:0px;">Enter Date and Time<span style="color:red;">*</span> : </h4>
             </div>
             <table>
                 <tr>
@@ -38,7 +38,8 @@
                     </td>
                     <td>
                         Day:
-                        <input type="text" name="day" id="day" placeholder="dd" maxlength="2" class="form-control" formControlName="day" style="width:100px" />
+                        <input type="text" name="day" id="day" placeholder="dd" maxlength="2" class="form-control" formControlName="day" style="width:100px"
+                        />
                     </td>
                     <td>
                         Hour(24-hour):
@@ -47,8 +48,8 @@
                     </td>
                     <td>
                         Minute:
-                        <input type="text" name="minute" id="minute" placeholder="mm" maxlength="2" class="form-control" formControlName="minute" style="width:100px"
-                        />
+                        <input type="text" name="minute" id="minute" placeholder="mm" maxlength="2" class="form-control" formControlName="minute"
+                            style="width:100px" />
                     </td>
                 </tr>
             </table>
@@ -56,12 +57,17 @@
             <div>
                 <h4 style="padding-left:0px;">Schedule Details</h4>
             </div>
-            <div class="row">
-                <div class="col-25">
+            <div class="row" *ngIf="cronFlag==false">
+                <div class="col-25" >
                     <h4 style="font-size: small;font-weight: normal;">Cron Schedule Time</h4>
                 </div>
                 <div class="col-75">
                     <input type="text" name="cronExpr" formControlName="cronExpr" readonly="true" />
+                </div>
+            </div>
+            <div class="row" *ngIf="cronFlag==true">
+                <div class="col-25">
+                    <h4 style="font-size: small;font-weight: normal;">One Time Schedule</h4>
                 </div>
             </div>
             <div class="buttonAction">

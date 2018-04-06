@@ -29,6 +29,7 @@ export class NewComponent implements OnInit, OnDestroy {
   envStatus: boolean = false;
 
   cronFlag: boolean = false;
+  selectCron;
 
   constructor(public _router: Router,
     public _fb: FormBuilder,
@@ -36,27 +37,31 @@ export class NewComponent implements OnInit, OnDestroy {
     public _responseCode: ServerResponseCode,
     public _alertService: AlertCenterService) { }
 
-    get jobName():FormControl{
-      return this.schedulerForm.get('jobName') as FormControl;
-    }
+  get jobName(): FormControl {
+    return this.schedulerForm.get('jobName') as FormControl;
+  }
 
-    get year():FormControl{
-      return this.schedulerForm.get('year') as FormControl;
-    }
+  get selectCronVal(): FormControl {
+    return this.schedulerForm.get('selectCron') as FormControl;
+  }
 
-    get month():FormControl{
-      return this.schedulerForm.get('month') as FormControl;
-    }
+  get year(): FormControl {
+    return this.schedulerForm.get('year') as FormControl;
+  }
 
-    get day():FormControl{
-      return this.schedulerForm.get('day') as FormControl;
-    }
-    get minute():FormControl{
-      return this.schedulerForm.get('minute') as FormControl;
-    }
-    get hour():FormControl{
-      return this.schedulerForm.get('hour') as FormControl;
-    }
+  get month(): FormControl {
+    return this.schedulerForm.get('month') as FormControl;
+  }
+
+  get day(): FormControl {
+    return this.schedulerForm.get('day') as FormControl;
+  }
+  get minute(): FormControl {
+    return this.schedulerForm.get('minute') as FormControl;
+  }
+  get hour(): FormControl {
+    return this.schedulerForm.get('hour') as FormControl;
+  }
 
   ngOnInit() {
     this.loading = true;
@@ -69,6 +74,7 @@ export class NewComponent implements OnInit, OnDestroy {
       day: [''],
       hour: [''],
       minute: [''],
+      selectCron: [''],
       cronExpression: ['0 0/1 * 1/1 * ? *'],
       startTask: [''],
       scheduleType: ['oneTimeSchedule'],
@@ -82,15 +88,14 @@ export class NewComponent implements OnInit, OnDestroy {
   }
 
   setDate(): void {
-     
+
     //EST offset
-     var  offset = -4.0;
-     
-     var clientDate = new Date();
-     var utc = clientDate.getTime() + (clientDate.getTimezoneOffset() * 60000);
-   
-    var serverDate = new Date(utc + (3600000*offset));
-   
+    var offset = -4.0;
+
+    var clientDate = new Date();
+    var utc = clientDate.getTime() + (clientDate.getTimezoneOffset() * 60000);
+    var serverDate = new Date(utc + (3600000 * offset));
+
 
     this.schedulerForm.patchValue({
       year: serverDate.getFullYear(),
@@ -103,18 +108,27 @@ export class NewComponent implements OnInit, OnDestroy {
 
   resetForm() {
     this.loading = true;
-    var dateNow = new Date();
+
+    //EST offset
+    var offset = -4.0;
+
+    var clientDate = new Date();
+    var utc = clientDate.getTime() + (clientDate.getTimezoneOffset() * 60000);
+    var serverDate = new Date(utc + (3600000 * offset));
     this.schedulerForm.patchValue({
       jobName: '',
-      year: dateNow.getFullYear(),
-      month: dateNow.getMonth() + 1,
-      day: dateNow.getDate(),
-      hour: dateNow.getHours(),
-      minute: dateNow.getMinutes(),
-      startTask:'',
-      taskKey:''
+      year: serverDate.getFullYear(),
+      month: serverDate.getMonth() + 1,
+      day: serverDate.getDate(),
+      hour: serverDate.getHours(),
+      minute: serverDate.getMinutes(),
+      startTask: '',
+      taskKey: '',
+      selectCron: '',
+      scheduleType: 'oneTimeSchedule'
     });
     this.jobNameStatus = "";
+    this.cronFlag = false;
     this.loading = false;
   }
 
@@ -172,7 +186,7 @@ export class NewComponent implements OnInit, OnDestroy {
     var minute = this.schedulerForm.value.minute;
     var data;
 
-    if (this.cronFlag==false) {
+    if (this.cronFlag == false) {
       data = {
         "jobName": this.schedulerForm.value.jobName,
         "jobScheduleTime": this.getFormattedDate(year, month, day, hour, minute),
@@ -190,41 +204,41 @@ export class NewComponent implements OnInit, OnDestroy {
       }
     }
 
-      this.loading = true;
-      this._schedulerService.scheduleJob(data).subscribe(
-        success => {
-          if (success.statusCode == ServerResponseCode.SUCCESS) {
-            this.loading = false;
-            const alert = new Alert(AlertType.SUCCESS, '', 'Job scheduled successfully.', 5000, true);
-            this._alertService.alert(alert);
-            this.resetForm();
-  
-          } else if (success.statusCode == ServerResponseCode.TASK_IS_ALREADY_SHEDULE) {
-            this.loading = false;
-            const alert = new Alert(AlertType.DANGER, '', 'Task is already schedule.', 5000, true);
-            this._alertService.alert(alert);
-          } else if (success.statusCode == ServerResponseCode.JOB_WITH_SAME_NAME_EXIST) {
-            this.loading = false;
-            const alert = new Alert(AlertType.DANGER, '', 'Job with same name exists, Please choose different name.', 5000, true);
-            this._alertService.alert(alert);
-          } else if (success.statusCode == ServerResponseCode.JOB_NAME_NOT_PRESENT) {
-            this.loading = false;
-            const alert = new Alert(AlertType.DANGER, '', 'Job name is mandatory.', 5000, true);
-            this._alertService.alert(alert);
-          } else if (success.statusCode == ServerResponseCode.JOB_TASK_NOT_PRESENT) {
-            this.loading = false;
-            const alert = new Alert(AlertType.DANGER, '', 'Job task is mandatory.', 5000, true);
-            this._alertService.alert(alert);
-          }
-          this.jobRecords = success.data;
-        },
-        err => {
+    this.loading = true;
+    this._schedulerService.scheduleJob(data).subscribe(
+      success => {
+        if (success.statusCode == ServerResponseCode.SUCCESS) {
           this.loading = false;
-          const alert = new Alert(AlertType.DANGER, '', 'Error while getting all jobs', 5000, true);
+          const alert = new Alert(AlertType.SUCCESS, '', 'Job scheduled successfully.', 5000, true);
           this._alertService.alert(alert);
-        });
-  
-    }
+          this.resetForm();
+
+        } else if (success.statusCode == ServerResponseCode.TASK_IS_ALREADY_SHEDULE) {
+          this.loading = false;
+          const alert = new Alert(AlertType.DANGER, '', 'Task is already schedule.', 5000, true);
+          this._alertService.alert(alert);
+        } else if (success.statusCode == ServerResponseCode.JOB_WITH_SAME_NAME_EXIST) {
+          this.loading = false;
+          const alert = new Alert(AlertType.DANGER, '', 'Job with same name exists, Please choose different name.', 5000, true);
+          this._alertService.alert(alert);
+        } else if (success.statusCode == ServerResponseCode.JOB_NAME_NOT_PRESENT) {
+          this.loading = false;
+          const alert = new Alert(AlertType.DANGER, '', 'Job name is mandatory.', 5000, true);
+          this._alertService.alert(alert);
+        } else if (success.statusCode == ServerResponseCode.JOB_TASK_NOT_PRESENT) {
+          this.loading = false;
+          const alert = new Alert(AlertType.DANGER, '', 'Job task is mandatory.', 5000, true);
+          this._alertService.alert(alert);
+        }
+        this.jobRecords = success.data;
+      },
+      err => {
+        this.loading = false;
+        const alert = new Alert(AlertType.DANGER, '', 'Error while getting all jobs', 5000, true);
+        this._alertService.alert(alert);
+      });
+
+  }
 
   refreshJob() {
     this.getJobs();

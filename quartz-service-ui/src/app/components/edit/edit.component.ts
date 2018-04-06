@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute,Router } from '@angular/router';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { SchedulerService } from '../../services/scheduler.service';
 import { ServerResponseCode } from '../../constant/response.code.constants';
@@ -15,8 +15,9 @@ jobRecords = [];
 isEditMode: boolean = false;
 public loading = false;
 cronExpression;
+cronFlag:boolean = false;
 
-  public constructor(private route : ActivatedRoute,private _fb: FormBuilder
+  public constructor(private _router: Router,private route : ActivatedRoute,private _fb: FormBuilder
     ,private _schedulerService : SchedulerService,)
  {
 
@@ -42,7 +43,13 @@ cronExpression;
     let date = new Date(time);
 
     this.cronExpression =  params['cronExpr'];
+    if(this.cronExpression==''){
+      this.cronFlag = true;
+    }
+
+    console.log(`CronExpression ${this.cronExpression}`);
     var cronText = `Every ${this.cronExpression.substring(4,6).trim()} minutes`;
+
 
 
     	this.editForm.patchValue({
@@ -126,10 +133,8 @@ cronExpression;
   }
 
   cancelEdit(){
-   this.loading = true;
-    this.resetForm();
-    this.isEditMode = false;
-     this.loading = false;
+    this._router.navigate(['./jobs']);
+
   }
 
    getFormattedDate(year, month, day, hour, minute) {
