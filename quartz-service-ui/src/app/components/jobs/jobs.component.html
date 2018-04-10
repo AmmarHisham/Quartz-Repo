@@ -28,8 +28,7 @@
                         <td>{{jobRec.lastFiredTime | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
                         <td>{{jobRec.nextFireTime | date: 'dd/MM/yyyy HH:mm:ss'}}</td>
                         <td>
-                            <button [disabled]="jobRec.jobStatus == 'RUNNING'" (click)='startJobNow(jobRec.jobName,jobRec.groupName)'>Start</button> |
-
+						
                             <button [disabled]="jobRec.jobStatus == 'RUNNING' || jobRec.jobStatus != 'SCHEDULED' || jobRec.jobStatus === 'PAUSED'" (click)='pauseJob(jobRec.jobName,jobRec.groupName)'>Pause</button> |
 
                             <button [disabled]="jobRec.jobStatus == 'RUNNING' || jobRec.jobStatus != 'PAUSED'" (click)='resumeJob(jobRec.jobName,jobRec.groupName)'>Resume</button> |
