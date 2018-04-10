@@ -75,7 +75,7 @@ export class NewComponent implements OnInit, OnDestroy {
       hour: [''],
       minute: [''],
       selectCron: [''],
-      cronExpression: ['0 0/1 * 1/1 * ? *'],
+      cronExpression: ['0 0/5 * 1/1 * ? *'],
       startTask: [''],
       scheduleType: ['oneTimeSchedule'],
     });

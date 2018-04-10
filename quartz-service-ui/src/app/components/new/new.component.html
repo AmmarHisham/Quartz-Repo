@@ -22,7 +22,7 @@
 
                     <select id="task" required (change)="startTaskChange($event.target.value)" class="form-control" style="width:175px;" formControlName="selectCron">
                         <option value=""></option>
-                        <option *ngFor="let task of tasks" value= {task.launch_url}},{{task.taskKey}}>{{task.taskKey}}</option>
+                        <option *ngFor="let task of tasks" value= {{task.launch_url}},{{task.taskKey}}>{{task.taskKey}}</option>
                     </select>
                     <small *ngIf=" !selectCronVal.pristine && selectCronVal.hasError('required')" class="text-danger">Task is required</small>
                </div>
@@ -91,8 +91,8 @@
                         </td>
                         <td>
                             <select (change)="cronChange($event.target.value)" class="form-control" >
-                                <option value="* 0/5 * ? * * *">Every 5 minutes</option>
-                                <option value="* 0/30 * ? * * *">Every 30 minutes</option>
+                                <option value="0 0/5 * 1/1 * ? *">Every 5 minutes</option>
+                                <option value="0 0/30 * 1/1 * ? *">Every 30 minutes</option>
                             </select>
                         </td>
                     </tr>
