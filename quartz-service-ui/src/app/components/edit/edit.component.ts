@@ -1,58 +1,58 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute,Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
 import { SchedulerService } from '../../services/scheduler.service';
 import { ServerResponseCode } from '../../constant/response.code.constants';
+import { AlertType, Alert, AlertCenterService } from 'ng2-alert-center';
 
 @Component({
   templateUrl: './edit.component.html',
   styleUrls: ['./edit.component.css']
 })
 export class EditComponent implements OnInit {
-editForm: FormGroup;
-jobNameStatus : String;
-jobRecords = [];
-isEditMode: boolean = false;
-public loading = false;
-cronExpression;
-cronFlag:boolean = false;
+  editForm: FormGroup;
+  jobNameStatus: String;
+  jobRecords = [];
+  isEditMode: boolean = false;
+  public loading = false;
+  cronExpression;
+  cronFlag: boolean = false;
 
-  public constructor(private _router: Router,private route : ActivatedRoute,private _fb: FormBuilder
-    ,private _schedulerService : SchedulerService,)
- {
+  public constructor(public _alertService: AlertCenterService, private _router: Router, private route: ActivatedRoute, private _fb: FormBuilder
+    , private _schedulerService: SchedulerService, ) {
 
- };
+  };
 
   ngOnInit() {
-   this.loading = true;
-  this.editForm = this._fb.group({
+    this.loading = true;
+    this.editForm = this._fb.group({
       jobName: [''],
-      groupName : [''],
+      groupName: [''],
       year: [''],
       month: [''],
       day: [''],
       hour: [''],
       minute: [''],
       cronExpression: [''],
-      cronExpr:['']
+      cronExpr: ['']
     });
- 	  this.route.queryParams.subscribe(params => {
-    
-    var time = Number(params['scheduleTime']);
-    var d = Date.parse(time.toString());
-    let date = new Date(time);
+    this.route.queryParams.subscribe(params => {
 
-    this.cronExpression =  params['cronExpr'];
-    if(this.cronExpression==''){
-      this.cronFlag = true;
-    }
+      var time = Number(params['scheduleTime']);
+      var d = Date.parse(time.toString());
+      let date = new Date(time);
 
-    console.log(`CronExpression ${this.cronExpression}`);
-    var cronText = `Every ${this.cronExpression.substring(4,6).trim()} minutes`;
+      this.cronExpression = params['cronExpr'];
+      if (this.cronExpression == '') {
+        this.cronFlag = true;
+      }
+
+      console.log(`CronExpression ${this.cronExpression}`);
+      var cronText = `Every ${this.cronExpression.substring(4, 6).trim()} minutes`;
 
 
 
-    	this.editForm.patchValue({
+      this.editForm.patchValue({
         jobName: params['jobName'],
         groupName: params['groupName'],
         cronExpr: cronText,
@@ -62,135 +62,105 @@ cronFlag:boolean = false;
         hour: date.getHours(),
         minute: date.getMinutes()
       });
-    
-   this.loading = false;
 
-      });
+      this.loading = false;
+
+    });
 
   }
-  
-  updateJob(){ 
+
+  updateJob() {
     var jobName = this.editForm.value.jobName;
     var year = this.editForm.value.year;
     var month = this.editForm.value.month;
     var day = this.editForm.value.day;
     var hour = this.editForm.value.hour;
     var minute = this.editForm.value.minute;
-    var groupName =this.editForm.value.groupName;
-    
+    var groupName = this.editForm.value.groupName;
+
     var data = {
       "jobName": this.editForm.value.jobName,
       "jobScheduleTime": this.getFormattedDate(year, month, day, hour, minute),
       "cronExpression": this.cronExpression,
-      "groupName":groupName
+      "groupName": groupName
     }
     this.loading = true;
     this._schedulerService.updateJob(data).subscribe(
       success => {
-          if(success.statusCode == ServerResponseCode.SUCCESS){
-           this.loading = false;
-            alert("Job updated successfully.");
-            this.resetForm();
+        if (success.statusCode == ServerResponseCode.SUCCESS) {
+          this.loading = false;
+          const alert = new Alert(AlertType.SUCCESS, '', 'Job updated successfully.', 5000, true);
+          this._alertService.alert(alert);
+          this.cancelEdit();
 
-          }else if(success.statusCode == ServerResponseCode.JOB_DOESNT_EXIST){
-            this.loading = false;
-            alert("Job no longer exist.");
-          
-          }else if(success.statusCode == ServerResponseCode.JOB_NAME_NOT_PRESENT){
-            this.loading = false;
-            alert("Please provide job name.");
-          }
-          this.jobRecords = success.data;
+        } else if (success.statusCode == ServerResponseCode.JOB_DOESNT_EXIST) {
+          this.loading = false;
+          const alert = new Alert(AlertType.DANGER, '', 'Job no longer exist.', 5000, true);
+          this._alertService.alert(alert);
+        } else if (success.statusCode == ServerResponseCode.JOB_NAME_NOT_PRESENT) {
+          this.loading = false;
+          const alert = new Alert(AlertType.DANGER, '', 'Please provide job name.', 5000, true);
+          this._alertService.alert(alert);
+        }
+        this.jobRecords = success.data;
       },
       err => {
         this.loading = false;
-        alert("Error while updating job");
+        const alert = new Alert(AlertType.DANGER, '', 'Error while updating job.', 5000, true);
+        this._alertService.alert(alert);
       });
   }
 
-  editJob(selectedJobRow){
+  editJob(selectedJobRow) {
     this.isEditMode = true;
 
     var d = Date.parse(selectedJobRow.scheduleTime);
-    let date = new Date(selectedJobRow.scheduleTime); 
+    let date = new Date(selectedJobRow.scheduleTime);
     var cronExpression = selectedJobRow.cronExpr;
-    var cronText = `Every ${cronExpression.substring(4,6).trim()} Minute`;
+    var cronText = `Every ${cronExpression.substring(4, 6).trim()} Minute`;
 
 
     this.loading = true;
     this.editForm.patchValue({
-        jobName: selectedJobRow.jobName,
-        year: date.getFullYear(),
-        month: date.getMonth() + 1,
-        day: date.getDate(),
-        hour: date.getHours(),
-        minute: date.getMinutes(),
-        groupName: selectedJobRow.groupName,
-        cronExpr: cronText
-      });
+      jobName: selectedJobRow.jobName,
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDate(),
+      hour: date.getHours(),
+      minute: date.getMinutes(),
+      groupName: selectedJobRow.groupName,
+      cronExpr: cronText
+    });
 
     this.loading = false;
   }
 
-  cancelEdit(){
+  cancelEdit() {
     this._router.navigate(['./jobs']);
 
   }
 
-   getFormattedDate(year, month, day, hour, minute) {
-    return year + "/" + month + "/" + day + " " + hour+":"+minute;
+  getFormattedDate(year, month, day, hour, minute) {
+    return year + "/" + month + "/" + day + " " + hour + ":" + minute;
   }
 
-    resetForm(){
+  resetForm() {
     var dateNow = new Date();
-     this.loading = true;
+    this.loading = true;
     this.editForm.patchValue({
-        jobName: "",
-        year: dateNow.getFullYear(),
-        month: dateNow.getMonth() + 1,
-        day: dateNow.getDate(),
-        hour: dateNow.getHours(),
-        minute: dateNow.getMinutes()
-      });
+      jobName: "",
+      year: dateNow.getFullYear(),
+      month: dateNow.getMonth() + 1,
+      day: dateNow.getDate(),
+      hour: dateNow.getHours(),
+      minute: dateNow.getMinutes()
+    });
     this.jobNameStatus = "";
-     this.loading = false;
+    this.loading = false;
   }
-    checkJobExistWith(jobName){
-      var data = {
-        "jobName": jobName
-      }
-
-      this.loading = true;
-      this._schedulerService.isJobWithNamePresent(data).subscribe(
-      success => {
-          if(success.statusCode == ServerResponseCode.SUCCESS){
-            if(success.data == true){
-             this.loading = false;
-              this.jobNameStatus = "Bad :(";
-            }else{
-             this.loading = false;
-              this.jobNameStatus = "Good :)";
-            }
-          }else if(success.statusCode == ServerResponseCode.JOB_NAME_NOT_PRESENT){
-           this.loading = false;
-            alert("Job name is mandatory.");
-            this.editForm.patchValue({
-              jobName: "",
-            });
-          }
-      },
-      err => {
-        alert("Error while checkinh job with name exist.");
-      });
-      this.jobNameStatus = ""; 
-  }
-    cronChange(cronExp){
+  cronChange(cronExp) {
     this.editForm.patchValue({
-        cronExpression: cronExp
-      });
+      cronExpression: cronExp
+    });
   }
-
-
-  
-
 }
