@@ -130,6 +130,7 @@ export class NewComponent implements OnInit, OnDestroy {
     this.jobNameStatus = "";
     this.cronFlag = false;
     this.loading = false;
+	this.schedulerForm.markAsPristine();
   }
 
   getJobs() {
